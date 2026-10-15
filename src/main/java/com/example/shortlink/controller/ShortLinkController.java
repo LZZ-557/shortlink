@@ -6,7 +6,7 @@ import com.example.shortlink.pojo.Result;
 import com.example.shortlink.pojo.ShortLinkInformation;
 import com.example.shortlink.pojo.StatsData;
 import com.example.shortlink.service.ShortLinkService;
-import com.example.shortlink.service.component.AccessLogRecorder;
+import com.example.shortlink.service.component.AsynchronousComponent;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +24,7 @@ public class ShortLinkController {
     private ShortLinkService shortLinkService;
 
     @Autowired
-    private AccessLogRecorder recorder;
+    private AsynchronousComponent recorder;
 
     //通过短码查询信息
     @GetMapping("/api/shortlink/{shortCode}")
@@ -112,7 +112,7 @@ public class ShortLinkController {
         accessLog.setReferer(referer);
         //调用record方法，这是一个异步写入，如果用户访问时同时写入会有很长的跳转时间，
         // 所以是将写库的任务放入线程池中通过线程接收任务异步写入，放完任务后直接返回减小响应时间
-        recorder.record(accessLog);
+        recorder.AccessLogRecord(accessLog);
 
         return ResponseEntity.status(HttpStatus.FOUND).location(URI.create(longUrl)).build();
     }

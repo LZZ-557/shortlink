@@ -1,6 +1,7 @@
 package com.example.shortlink.config;
 
 
+import org.jspecify.annotations.NonNull;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -12,21 +13,17 @@ public class ThreadPoolConfig {
 
 
 
-    @Bean(name = "AccessLogExecutor",destroyMethod = "shutdown")
-    public ExecutorService accessLogExecutor() {
-        return new ThreadPoolExecutor(
+    @Bean(name = "ShortLinkExecutor",destroyMethod = "shutdown")
+    public ScheduledExecutorService accessLogExecutor() {
+        return new ScheduledThreadPoolExecutor(
                 2,
-                4,
-                60L, TimeUnit.SECONDS,
-                new ArrayBlockingQueue<>(1000),
-                new ThreadFactory() {           // 自定义线程工厂
+                new ThreadFactory() {
                     private final AtomicInteger index = new AtomicInteger(1);
                     @Override
-                    public Thread newThread(Runnable r) {
+                    public Thread newThread(@NonNull Runnable r) {
                         Thread t = new Thread(r, "my-pool-" + index.getAndIncrement());
-                        t.setUncaughtExceptionHandler((thread, ex) -> {
-                            System.err.println("线程 " + thread.getName() + " 异常: " + ex);
-                        });
+                        t.setUncaughtExceptionHandler((thread, ex) ->
+                                System.err.println("线程 " + thread.getName() + " 异常: " + ex));
                         return t;
                     }
                 },

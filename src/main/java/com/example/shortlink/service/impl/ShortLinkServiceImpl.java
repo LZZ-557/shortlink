@@ -5,6 +5,7 @@ import com.example.shortlink.mapper.ShortLinkMapper;
 import com.example.shortlink.pojo.ShortLinkInformation;
 import com.example.shortlink.pojo.StatsData;
 import com.example.shortlink.service.ShortLinkService;
+import com.example.shortlink.service.component.AsynchronousComponent;
 import com.example.shortlink.service.component.IdGenerator;
 import com.example.shortlink.service.component.RedisService;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +30,9 @@ public class ShortLinkServiceImpl implements ShortLinkService {
 
     @Autowired
     private IdGenerator idGenerator;
+
+    @Autowired
+    AsynchronousComponent asynchronousComponent;
 
     @Override
     public ShortLinkInformation selectActiveByShortCode(String shortCode) {
@@ -85,8 +89,8 @@ public class ShortLinkServiceImpl implements ShortLinkService {
             shortLinkMapper.softDeleteByShortCode(shortCode);
             log.info("数据库软删除映射：{}",shortCode);
 
-            redisService.delete("shortLink:"+shortCode);
-            log.info("删除缓存映射：{}",shortCode);
+            asynchronousComponent.deleteRedisTwice(shortCode);
+
         }
         else log.info("映射已被删除");
     }
