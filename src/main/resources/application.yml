@@ -1,0 +1,17 @@
+spring:
+  application:
+    name: shortlink
+  datasource:
+    url: JDBC:mysql://localhost:3306/short_link_project
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DB_USER:root}
+    password: ${DB_PASSWORD}
+
+
+mybatis:
+  configuration:
+    map-underscore-to-camel-case: true
+
+
+administratorApiKey:
+  api-key: ${API_KEY:}
