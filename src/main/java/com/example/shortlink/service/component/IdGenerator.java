@@ -15,7 +15,7 @@ public class IdGenerator {
 
 
     private long current = 0;//当前可用id
-    private long max = 0;//号段的上限，当current大于max时会被赋值成表中最大id + STEP
+    private long max = 0;//号段的上限，当current大于max时会被赋值成Redis中id上限+ STEP
 
     //获取id
     public synchronized Long nextId(){
